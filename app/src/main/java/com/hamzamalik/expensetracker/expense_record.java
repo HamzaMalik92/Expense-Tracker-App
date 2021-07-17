@@ -4,11 +4,11 @@ import java.util.ArrayList;
 
 public class expense_record {
     private int itemNo;
-    private Double spending;
+    private int spending;
     private String category;
     private String date;
 
-    expense_record(int itemNo, Double spending, String category, String date) {
+    expense_record(int itemNo, int spending, String category, String date) {
         this.itemNo = itemNo;
         this.spending = spending;
         this.category = category;
@@ -20,7 +20,7 @@ public class expense_record {
         return itemNo;
     }
 
-    Double getSpending() {
+    int getSpending() {
         return spending;
     }
 

@@ -112,7 +112,7 @@ public class add_expense extends AppCompatActivity implements DatePickerDialog.O
               expense_record expenseRecord =
                   new expense_record(
                       new Integer(id),
-                      new Double(editTextExpense.getText().toString()),
+                      new Integer(editTextExpense.getText().toString()),
                       selectedCatName,
                       editDate.getText().toString());
               String er_json = gson.toJson(expenseRecord);
