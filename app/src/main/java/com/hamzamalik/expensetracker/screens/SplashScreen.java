@@ -1,14 +1,19 @@
-package com.hamzamalik.expensetracker;
+package com.hamzamalik.expensetracker.screens;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 
+import com.hamzamalik.expensetracker.R;
+
 import static java.lang.Thread.sleep;
 
 public class SplashScreen extends AppCompatActivity {
+
+    Handler handler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -18,19 +23,18 @@ public class SplashScreen extends AppCompatActivity {
         // hide toolbar
         getSupportActionBar().hide();
 
-        new Handler().postDelayed(new Runnable() {
+        // disable dark mode
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
 
+        handler=new Handler();
+        handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-
-                Intent i = new Intent(SplashScreen.this, MainActivity.class);
-                startActivity(i);
-
+                Intent intent=new Intent(SplashScreen.this,HomeScreen.class);
+                startActivity(intent);
                 finish();
-
             }
-
-        }, 2000);
+        },1500);
 
 
     }

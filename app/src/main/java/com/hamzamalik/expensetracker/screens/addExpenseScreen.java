@@ -1,10 +1,10 @@
-package com.hamzamalik.expensetracker;
+package com.hamzamalik.expensetracker.screens;
 
 import android.app.DatePickerDialog;
-import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.DatePicker;
 import android.widget.EditText;
@@ -12,34 +12,33 @@ import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.cardview.widget.CardView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.gson.Gson;
+import com.hamzamalik.expensetracker.R;
+import com.hamzamalik.expensetracker.database.dbHandler;
+import com.hamzamalik.expensetracker.recyclerView.expense_record;
 
-import java.time.Duration;
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Map;
-import java.util.Timer;
 
-public class add_expense extends AppCompatActivity implements DatePickerDialog.OnDateSetListener {
-  //  // create / open database
-  //  SQLiteDatabase expense_tracker_db =
-  //      openOrCreateDatabase("Expense Tracker Db", MODE_PRIVATE, null);
+public class addExpenseScreen extends AppCompatActivity implements DatePickerDialog.OnDateSetListener {
 
   EditText editDate;
   EditText editTextExpense;
   DatePickerDialog datePickerDialog;
   boolean isCatSelected = false;
   String selectedCatName = "";
-  record_per_month record = new record_per_month();
 
   @RequiresApi(api = Build.VERSION_CODES.N)
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    setContentView(R.layout.activity_add_expense);
+    setContentView(R.layout.activity_add_expense_screen);
+
+
+    getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    getSupportActionBar().setTitle("Expense Tracker");
 
     editTextExpense = findViewById(R.id.editTextMoney);
     editDate = findViewById(R.id.date_picker_dialog);
@@ -52,7 +51,7 @@ public class add_expense extends AppCompatActivity implements DatePickerDialog.O
     int month = calendar.get(Calendar.MONTH);
     int day = calendar.get(Calendar.DAY_OF_MONTH);
 
-    datePickerDialog = new DatePickerDialog(add_expense.this, this, year, month, day);
+    datePickerDialog = new DatePickerDialog(addExpenseScreen.this, this, year, month, day);
     datePickerDialog.setCancelable(true);
 
     FloatingActionButton floatingActionButton = findViewById(R.id.favbtn_add_expense);
@@ -61,70 +60,22 @@ public class add_expense extends AppCompatActivity implements DatePickerDialog.O
           @Override
           public void onClick(View v) {
             if (editTextExpense.getText().toString().length() == 0) {
-              Toast.makeText(add_expense.this, "Enter expenses", Toast.LENGTH_SHORT).show();
+              Toast.makeText(addExpenseScreen.this, "Enter expenses", Toast.LENGTH_SHORT).show();
             } else if (editDate.getText().toString().length() == 0) {
-              Toast.makeText(add_expense.this, "Date is required", Toast.LENGTH_SHORT).show();
+              Toast.makeText(addExpenseScreen.this, "Date is required", Toast.LENGTH_SHORT).show();
             } else if (!isCatSelected) {
-              Toast.makeText(add_expense.this, "Select Category", Toast.LENGTH_SHORT).show();
+              Toast.makeText(addExpenseScreen.this, "Select Category", Toast.LENGTH_SHORT).show();
             } else {
 
-              //              Toast.makeText(
-              //                      add_expense.this,
-              //                      "Expense : "
-              //                          + expenseRecord.getSpending()
-              //                          + " Date : "
-              //                          + expenseRecord.getDate()
-              //                          + " Category : "
-              //                          + expenseRecord.getCategory(),
-              //                      Toast.LENGTH_SHORT)
-              //                  .show();
+              // using database to store a new spending record
 
-              System.out.println("record.record_list_length()" + record.record_list_length());
+              dbHandler db=new dbHandler(getApplicationContext());
+              int id=db.getLastID()+1;
 
-              // convert User object user to JSON format
-              Gson gson = new Gson();
+              expense_record record=new expense_record(id,Integer.parseInt(editTextExpense.getText().toString()),selectedCatName,editDate.getText().toString());
 
-              //
-              // Storing data into SharedPreferences
-              SharedPreferences sharedPreferences =
-                  getSharedPreferences("expense_tracker_records", MODE_PRIVATE);
-
-              // Creating an Editor object to edit(write to the file)
-              SharedPreferences.Editor myEdit = sharedPreferences.edit();
-
-              // Storing the key and its value as the data fetched from edittext
-              String itemIDs = sharedPreferences.getString("list", "");
-              System.out.println("ItemIDs" + itemIDs);
-
-              String id;
-
-              if (!itemIDs.equals("")) {
-                ArrayList<Integer> arrayList = gson.fromJson(itemIDs, ArrayList.class);
-                arrayList.add(arrayList.size()+1);
-                id = arrayList.size()+ "";
-                myEdit.putString("list", gson.toJson(arrayList));
-              } else {
-                ArrayList<Integer> arrayList = new ArrayList<>();
-                arrayList.add(1);
-                myEdit.putString("list", gson.toJson(arrayList));
-                id = 1 + "";
-              }
-              expense_record expenseRecord =
-                  new expense_record(
-                      new Integer(id),
-                      new Integer(editTextExpense.getText().toString()),
-                      selectedCatName,
-                      editDate.getText().toString());
-              String er_json = gson.toJson(expenseRecord);
-              myEdit.putString(new Double(id)+"", er_json);
-
-              // store in SharedPreferences
-
-              // Once the changes have been made,
-              // we need to commit to apply those changes made,
-              // otherwise, it will throw an error
-              myEdit.commit();
-
+              db.addRecord(record);
+              db.close();
 
               // go back to home screen
                 finish();
@@ -137,8 +88,17 @@ public class add_expense extends AppCompatActivity implements DatePickerDialog.O
   }
 
   @Override
+  public boolean onOptionsItemSelected( MenuItem item) {
+    if (item.getItemId() == android.R.id.home) {
+      this.finish();
+      return true;
+    }
+    return super.onOptionsItemSelected(item);
+  }
+  @Override
   public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
     month++;
+
     String date = dayOfMonth + "/" + month + "/" + year;
     editDate.setText(date);
   }
