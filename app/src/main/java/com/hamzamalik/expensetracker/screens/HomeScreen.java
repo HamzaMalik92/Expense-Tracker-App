@@ -58,7 +58,7 @@ public class HomeScreen extends AppCompatActivity {
                     @Override
                     public void onClick(View view) {
 
-                        Intent intent = new Intent(getApplicationContext(), addExpenseScreen.class);
+                        Intent intent = new Intent(HomeScreen.this, addExpenseScreen.class);
                         startActivity(intent);
                     }
                 });
@@ -118,7 +118,6 @@ public class HomeScreen extends AppCompatActivity {
                 Date d = null;
                 try {
                     d = dateFormat.parse(records.get(i).getDate());
-                    System.out.println("HAmza0" + d.getMonth() + " # " + currentMonthNo);
 
                     if (d != null && d.getMonth() == currentMonthNo) {
                         monthlySpending += records.get(i).getSpending();

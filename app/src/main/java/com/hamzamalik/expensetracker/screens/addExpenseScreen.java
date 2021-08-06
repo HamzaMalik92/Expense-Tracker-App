@@ -55,6 +55,7 @@ public class addExpenseScreen extends AppCompatActivity implements DatePickerDia
     datePickerDialog.setCancelable(true);
 
     FloatingActionButton floatingActionButton = findViewById(R.id.favbtn_add_expense);
+
     floatingActionButton.setOnClickListener(
         new View.OnClickListener() {
           @Override
